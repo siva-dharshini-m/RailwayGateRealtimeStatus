@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Railway Gate Status</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f7;
+      padding: 30px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      max-width: 400px;
+      margin: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #333;
+    }
+    .status {
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>🚦 Railway Gate Monitor</h2>
+    <p><strong>Location:</strong> <span id="location"></span></p>
+    <p><strong>Gate Status:</strong> <span id="gateStatus"></span></p>
+    <p><strong>Last Opened:</strong> <span id="lastOpened"></span></p>
+  </div>
+
+  <script>
+    async function loadGateData() {
+      try {
+        const response = await fetch('http://localhost:3000/api/gate');
+        const gateData = await response.json();
+
+        document.getElementById('location').textContent = gateData.location;
+        document.getElementById('gateStatus').textContent = gateData.gate_state === 0 ? '🟢 Open' : '🔴 Closed';
+
+        const date = new Date(gateData.last_gate_opened_time);
+        document.getElementById('lastOpened').textContent = date.toLocaleString();
+      } catch (error) {
+        document.getElementById('location').textContent = 'Error loading data';
+        document.getElementById('gateStatus').textContent = '-';
+        document.getElementById('lastOpened').textContent = '-';
+      }
+    }
+
+    // Load data initially and refresh every 5 seconds
+    loadGateData();
+    setInterval(loadGateData, 5000);
+  </script>
+</body>
+</html>
